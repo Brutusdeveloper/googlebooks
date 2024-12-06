@@ -27,6 +27,9 @@
   .imglabel {
     font-size: 18px;
     font-weight: 600;
+    @media (max-width: 576px) {
+        display: none;
+    }
   }
   img {
     width: 40px;
@@ -38,6 +41,9 @@
     gap: 20px;
     flex:auto;
     padding-left: 20px;
+    @media (max-width: 576px) {
+      max-width: 90%;
+  }
   }
 }
 
@@ -71,7 +77,9 @@
 .gridContainer {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); 
-  grid-gap: 12px; 
+  grid-gap: 12px;
+  align-items: center;
+  justify-content: center; 
 }
 
 .loading {
