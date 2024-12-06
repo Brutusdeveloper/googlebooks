@@ -1,16 +1,14 @@
 "use client";
-
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment, useRef } from "react";
 import { Box, Typography, Pagination, SelectChangeEvent } from "@mui/material";
 import Grid from '@mui/material/Grid2';
-import { Category } from "../types/category";
+import { Book } from "../types/book";
 import BookCard from "../components/BookCard";
 import styles from "../styles/Home.module.scss";
 import HeaderSearch from "../components/HeaderSearch";
 import Spinner from "../components/Spinner";
-import useFetchBooks from "../hooks/useFetchBooks";
 import { categories } from "../constants/categories";
-
+import useFetchBooks from "../hooks/useFetchBooks"; // Import custom hook
 
 const Home: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>(localStorage.getItem('searchTerm') || "");
@@ -18,8 +16,7 @@ const Home: React.FC = () => {
   const [page, setPage] = useState<number>(Number(localStorage.getItem('page')) || 1);
   const [isClient, setIsClient] = useState(false); // To track whether we're on the client
 
-  // Use the custom hook for fetching books
-  const { books, allBooks, loading, fetchBooks } = useFetchBooks();
+  const { books, allBooks, loading } = useFetchBooks(searchTerm, category); // Use the custom hook
 
   useEffect(() => {
     setIsClient(true);
@@ -30,10 +27,6 @@ const Home: React.FC = () => {
     localStorage.setItem('category', category);
     localStorage.setItem('page', String(page));
   }, [searchTerm, category, page]);
-
-  useEffect(() => {
-    fetchBooks(searchTerm, category); // Fetch books on searchTerm/category change
-  }, [searchTerm, category, fetchBooks]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -47,26 +40,20 @@ const Home: React.FC = () => {
   const paginatedBooks = allBooks.slice((page - 1) * booksPerPage, page * booksPerPage);
 
   if (!isClient) {
-    return <Spinner/>;
+    return <div className={styles.spinnerContainer}><div className={styles.spinner}></div></div>;
   }
 
   return (
     <Fragment>
-      <HeaderSearch
-        searchTerm={searchTerm}
-        handleSearchChange={handleSearchChange}
-        category={category}
-        handleCategoryChange={handleCategoryChange}
-        categories={categories}
-      />
+      <HeaderSearch searchTerm={searchTerm} handleSearchChange={handleSearchChange} category={category} handleCategoryChange={handleCategoryChange} categories={categories} />
       <div className={styles.container}>
         {/* Display Loading */}
-        {loading ? (
-          <Spinner />
-        ) : (
+        {loading 
+        ? <Spinner />
+        : (
           <>
             {paginatedBooks.length > 0 ? (
-              <Grid container spacing={2} columns={{ xs: 4, sm: 4, md: 12 }}>
+              <Grid container spacing={2} columns={{ xs: 4, sm: 4, md: 12 }} className={styles.gridContainer}>
                 {paginatedBooks.map((book) => (
                   <Grid columns={{ xs: 4, sm: 4, md: 12 }} key={book.id}>
                     <BookCard book={book} />

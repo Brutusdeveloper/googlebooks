@@ -68,7 +68,11 @@
   border-radius: 4px;
 }
 
-
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); 
+  grid-gap: 12px; 
+}
 
 .loading {
   text-align: center;
