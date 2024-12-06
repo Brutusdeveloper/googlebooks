@@ -15,18 +15,22 @@ const bookSlice = createSlice({
   reducers: {
     setSelectedBook: (state, action: PayloadAction<any>) => {
       state.selectedBook = action.payload;
-      // Persist the selected book in localStorage
-      if (action.payload) {
-        localStorage.setItem('selectedBook', JSON.stringify(action.payload));
-      } else {
-        localStorage.removeItem('selectedBook'); // Remove from localStorage if the book is unselected
+      // Persist the selected book in localStorage (Only on client side)
+      if (typeof window !== 'undefined') {
+        if (action.payload) {
+          localStorage.setItem('selectedBook', JSON.stringify(action.payload));
+        } else {
+          localStorage.removeItem('selectedBook'); // Remove from localStorage if the book is unselected
+        }
       }
     },
     loadSelectedBookFromStorage: (state) => {
-      // Check if there's a book in localStorage and set it as the selected book
-      const storedBook = localStorage.getItem('selectedBook');
-      if (storedBook) {
-        state.selectedBook = JSON.parse(storedBook);
+      // Check if there's a book in localStorage and set it as the selected book (Only on client side)
+      if (typeof window !== 'undefined') {
+        const storedBook = localStorage.getItem('selectedBook');
+        if (storedBook) {
+          state.selectedBook = JSON.parse(storedBook);
+        }
       }
     },
   },

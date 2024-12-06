@@ -14,9 +14,10 @@ const BookCard = ({ book }: { book: any }) => {
     };
 
     return (
-        <Card>
+        <Card sx={{minWidth: 275, maxWidth: 345 }}>
             <CardMedia
                 component="img"
+                sx={{maxheight: 200 }}
                 alt={book.volumeInfo.title}
                 image={book.volumeInfo.imageLinks?.thumbnail || "/default-book-image.jpg"}
             />
