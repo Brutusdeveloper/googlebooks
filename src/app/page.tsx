@@ -36,15 +36,12 @@ const Home: React.FC = () => {
   const [page, setPage] = useState<number>(Number(localStorage.getItem('page')) || 1);
   const [loading, setLoading] = useState<boolean>(false);
   const [isClient, setIsClient] = useState(false); // To track whether we're on the client
-
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  // Use useEffect to set `isClient` only after the component mounts
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Update localStorage when the search term, category, or page changes
   useEffect(() => {
     localStorage.setItem('searchTerm', searchTerm);
     localStorage.setItem('category', category);

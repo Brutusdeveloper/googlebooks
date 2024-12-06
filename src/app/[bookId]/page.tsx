@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { RootState } from '../../redux/store';
-import { setSelectedBook, loadSelectedBookFromStorage } from '../../redux/bookSlice';
+import { loadSelectedBookFromStorage } from '../../redux/bookSlice';
 import { Box, Typography, Button } from '@mui/material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import Image from 'next/image';
@@ -17,15 +17,11 @@ const BookDetails: React.FC = () => {
 
   const [isClient, setIsClient] = useState(false);
 
-  // Ensure that we are on the client-side by using useEffect
   useEffect(() => {
     setIsClient(true);
-
-    // Load the book from localStorage if it's not already in the Redux store
     dispatch(loadSelectedBookFromStorage());
   }, [dispatch]);
 
-  // If the component is not yet rendered on the client, or no book is selected, display a loading state
   if (!isClient || !selectedBook) {
     return <Typography variant="h6" style={{ textAlign: 'center', marginTop: '50px' }}>Loading...</Typography>;
   }
@@ -39,7 +35,7 @@ const BookDetails: React.FC = () => {
         <Button
           variant="outlined"
           startIcon={<KeyboardBackspaceIcon />}
-          onClick={() => router.push('/')} // Navigate to the home page
+          onClick={() => router.push('/')} 
         >
           Back Home
         </Button>
@@ -51,13 +47,12 @@ const BookDetails: React.FC = () => {
             <Image
               src={imageLinks.thumbnail}
               alt={title}
-              width={400} // Adjust the width for larger screens
-              height={400} // Default height; maintain aspect ratio
+              width={400} 
+              height={400} 
               className={styles.bookImage}
             />
           </div>
         )}
-        {/* Book Info */}
         <div>
           <Typography variant="h4" className={styles.bookTitle}>
             {title}
