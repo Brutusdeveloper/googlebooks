@@ -1,101 +1,140 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect, Fragment, useRef } from "react";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import {
+  TextField,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Box,
+  Typography,
+  Pagination,
+  SelectChangeEvent,
+} from "@mui/material";
+import Grid from '@mui/material/Grid2';
+import { Book } from "../types/book";
+import { Category } from "../types/category";
+import BookCard from "../components/BookCard";
+import styles from "../styles/Home.module.scss";
+import HeaderSearch from "../components/HeaderSearch";
+import Spinner from "../components/Spinner";
+
+const categories: Category[] = [
+  { categoryName: "Fiction", categoryValue: "fiction" },
+  { categoryName: "History", categoryValue: "history" },
+  { categoryName: "Comics", categoryValue: "comics" },
+];
+
+const Home: React.FC = () => {
+  const [books, setBooks] = useState<Book[]>([]);
+  const [allBooks, setAllBooks] = useState<Book[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>(localStorage.getItem('searchTerm') || "");
+  const [category, setCategory] = useState<string>(localStorage.getItem('category') || "fiction");
+  const [page, setPage] = useState<number>(Number(localStorage.getItem('page')) || 1);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isClient, setIsClient] = useState(false); // To track whether we're on the client
+
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  // Use useEffect to set `isClient` only after the component mounts
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Update localStorage when the search term, category, or page changes
+  useEffect(() => {
+    localStorage.setItem('searchTerm', searchTerm);
+    localStorage.setItem('category', category);
+    localStorage.setItem('page', String(page));
+  }, [searchTerm, category, page]);
+
+  useEffect(() => {
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+
+    // Set a new timeout to delay the API call
+    debounceTimeout.current = setTimeout(() => {
+      if (searchTerm.trim() === "") {
+        setAllBooks([]);
+        setBooks([]);
+        return;
+      }
+
+      const fetchBooks = async () => {
+        try {
+          setLoading(true);
+          const response = await axios.get(
+            `https://www.googleapis.com/books/v1/volumes?q=${searchTerm}&subject=${category}&startIndex=0&maxResults=30`
+          );
+          setAllBooks(response.data.items || []);
+        } catch (error) {
+          console.error("Error fetching books:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchBooks();
+    }, 500); // 500ms debounce delay
+  }, [searchTerm, category]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleCategoryChange = (e: SelectChangeEvent<string>) => {
+    setCategory(e.target.value as string);
+  };
+
+  const booksPerPage = 7;
+  const paginatedBooks = allBooks.slice((page - 1) * booksPerPage, page * booksPerPage);
+
+  if (!isClient) {
+    return <div className={styles.spinnerContainer}><div className={styles.spinner}></div></div>;
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <Fragment>
+      <HeaderSearch searchTerm={searchTerm} handleSearchChange={handleSearchChange} category= {category} handleCategoryChange = {handleCategoryChange} categories= {categories} />
+      <div className={styles.container}>
+        {/* Display Loading */}
+        {loading 
+        ? <Spinner/>
+        : (
+          <>
+            {paginatedBooks.length > 0 ? (
+              <Grid container spacing={2} columns={{ xs: 4, sm: 4, md: 12 }}>
+                {paginatedBooks.map((book) => (
+                  <Grid columns={{ xs: 4, sm: 4, md: 12 }} key={book.id}>
+                    <BookCard book={book} />
+                  </Grid>
+                ))}
+              </Grid>
+            ) : (
+              <Typography variant="h6" className={styles.noBooks}>
+                No books found
+              </Typography>
+            )}
+          </>
+        )}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+        {paginatedBooks.length > 0 && !loading && (
+          <Box className={styles.paginationWrapper}>
+            <Pagination
+              count={Math.ceil(allBooks.length / booksPerPage)}
+              page={page}
+              onChange={(e, value) => setPage(value)}
+              color="primary"
+              disabled={loading}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          </Box>
+        )}
+      </div>
+    </Fragment>
   );
-}
+};
+
+export default Home;
