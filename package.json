@@ -34,7 +34,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Brutusdeveloper/NextJsExercises-.git"
+    "url": "https://github.com/Brutusdeveloper/googlebooks.git"
   },
   "keywords": [
     "NestJsExercises"
@@ -42,7 +42,7 @@
   "author": "vijay",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Brutusdeveloper/NextJsExercises-/issues"
+    "url": "https://github.com/Brutusdeveloper/googlebooks-/issues"
   },
-  "homepage": "https://github.com/Brutusdeveloper/NextJsExercises-#readme"
+  "homepage": "https://github.com/Brutusdeveloper/googlebooks-#readme"
 }
