@@ -35,10 +35,11 @@ const BookDetails: React.FC = () => {
       <div className={styles.backButton}>
         <Button
           variant="outlined"
+          size='small'
           startIcon={<KeyboardBackspaceIcon />}
           onClick={() => router.push('/')} 
         >
-          Back Home
+          Back
         </Button>
       </div>
       <div className={styles.bookDetailsContainer}>
