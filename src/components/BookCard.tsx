@@ -7,7 +7,7 @@ import { setSelectedBook } from '../redux/bookSlice';
 const BookCard = ({ book }: { book: any }) => {
     const dispatch = useDispatch();
     const router = useRouter();
-
+    console.log(book, "book")
     const handleViewDetails = () => {
         dispatch(setSelectedBook(book));
         router.push(`/${book.id}`);
@@ -18,7 +18,6 @@ const BookCard = ({ book }: { book: any }) => {
             <CardMedia
                 component="img"
                 alt={book.volumeInfo.title}
-                height="250"
                 image={book.volumeInfo.imageLinks?.thumbnail || "/default-book-image.jpg"}
             />
             <CardContent>

@@ -36,11 +36,11 @@ const Home: React.FC = () => {
     setCategory(e.target.value as string);
   };
 
-  const booksPerPage = 7;
+  const booksPerPage = 8;
   const paginatedBooks = allBooks.slice((page - 1) * booksPerPage, page * booksPerPage);
 
   if (!isClient) {
-    return <div className={styles.spinnerContainer}><div className={styles.spinner}></div></div>;
+    return <Spinner/>;
   }
 
   return (
