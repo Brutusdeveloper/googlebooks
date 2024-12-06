@@ -40,10 +40,10 @@ const BookDetails: React.FC = () => {
           Back Home
         </Button>
       </div>
-      <div className={styles.bookContainer}>
+      <div className={styles.bookDetailsContainer}>
         {/* Book Image */}
         {imageLinks?.thumbnail && (
-          <div className={styles.imageContainer}>
+          <div className={styles.imageWrapper}>
             <Image
               src={imageLinks.thumbnail}
               alt={title}
@@ -53,7 +53,7 @@ const BookDetails: React.FC = () => {
             />
           </div>
         )}
-        <div>
+        <div className={styles.textContent}>
           <Typography variant="h4" className={styles.bookTitle}>
             {title}
           </Typography>

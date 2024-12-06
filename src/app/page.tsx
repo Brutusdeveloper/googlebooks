@@ -2,13 +2,7 @@
 
 import { useState, useEffect, Fragment, useRef } from "react";
 import axios from "axios";
-import { useDispatch } from "react-redux";
 import {
-  TextField,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
   Box,
   Typography,
   Pagination,

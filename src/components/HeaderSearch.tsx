@@ -26,7 +26,7 @@ const HeaderSearch=({searchTerm, handleSearchChange, category, handleCategoryCha
             onChange={handleSearchChange}
             className={styles.searchInput}
           />
-          <FormControl fullWidth className={styles.categorySelect}>
+          <FormControl fullWidth className={styles.searchInput}>
             <InputLabel>Category</InputLabel>
             <Select value={category} onChange={handleCategoryChange} label="Category" size="small">
               {categories.map((category:any) => (
