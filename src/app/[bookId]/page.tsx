@@ -9,6 +9,7 @@ import { Box, Typography, Button } from '@mui/material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import Image from 'next/image';
 import styles from '../../styles/BookDetails.module.scss';
+import Spinner from '../../components/Spinner';
 
 const BookDetails: React.FC = () => {
   const router = useRouter();
@@ -23,7 +24,7 @@ const BookDetails: React.FC = () => {
   }, [dispatch]);
 
   if (!isClient || !selectedBook) {
-    return <Typography variant="h6" style={{ textAlign: 'center', marginTop: '50px' }}>Loading...</Typography>;
+    return <Spinner/>;
   }
 
   const { title, authors, description, imageLinks } = selectedBook.volumeInfo;
